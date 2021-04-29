@@ -5,7 +5,7 @@
 
 using System.Data.Entity;
 
-namespace EngUtil.EF.CRUDService
+namespace EngUtil.EF6.CRUDService
 {
     public interface IDbContextService
     {

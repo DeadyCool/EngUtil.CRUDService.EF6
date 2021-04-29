@@ -4,11 +4,11 @@ using System.Runtime.InteropServices;
 // Allgemeine Informationen über eine Assembly werden über die folgenden
 // Attribute gesteuert. Ändern Sie diese Attributwerte, um die Informationen zu ändern,
 // die einer Assembly zugeordnet sind.
-[assembly: AssemblyTitle("EngUtil.EF.CRUDService")]
+[assembly: AssemblyTitle("EngUtil.EF6.CRUDService")]
 [assembly: AssemblyDescription("Simple CRUD-Service for EntityFramework6")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("EngUtil.EF.CRUDService")]
+[assembly: AssemblyProduct("EngUtil.EF6.CRUDService")]
 [assembly: AssemblyCopyright("Copyright © Oliver Engels")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

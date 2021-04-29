@@ -9,7 +9,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
-namespace EngUtil.EF.CRUDService
+namespace EngUtil.EF6.CRUDService
 {
     /// <summary>
     /// Represents a interface for common CRUD-Operations
@@ -126,14 +126,6 @@ namespace EngUtil.EF.CRUDService
         /// Remove a entity from the repository
         /// </summary>
         /// <param name="key"></param>
-        Task DeleteAsync(object key);
-
-        /// <summary>
-        /// Returns a new DbContext instance from the Repository
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        T GetContext<T>()
-            where T : DbContext;
+        Task DeleteAsync(object key);           
     }
 }

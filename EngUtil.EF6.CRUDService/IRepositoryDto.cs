@@ -6,7 +6,7 @@
 using System;
 using System.Linq.Expressions;
 
-namespace EngUtil.EF.CRUDService
+namespace EngUtil.EF6.CRUDService
 {
     public interface IRepositoryDto<TEntity, TModel>
     {

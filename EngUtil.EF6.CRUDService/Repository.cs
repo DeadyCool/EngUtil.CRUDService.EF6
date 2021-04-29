@@ -11,10 +11,10 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
-using EngUtil.EF.CRUDService.Helper;
+using EngUtil.EF6.CRUDService.Helper;
 
 
-namespace EngUtil.EF.CRUDService
+namespace EngUtil.EF6.CRUDService
 {
     public abstract class Repository<TDbContext, TEntity, TModel> : IRepository<TModel>, IRepositoryDto<TEntity, TModel>
         where TDbContext : DbContext
@@ -67,7 +67,7 @@ namespace EngUtil.EF.CRUDService
         }
 
         /// <inheritdoc>
-        public int Count(Expression<Func<TModel, bool>> filter = null)
+        public virtual int Count(Expression<Func<TModel, bool>> filter = null)
         {
             using (var ctx = DbContextService.CreateContext())
             {
@@ -84,7 +84,7 @@ namespace EngUtil.EF.CRUDService
         }
 
         /// <inheritdoc>
-        public async Task<int> CountAsync(Expression<Func<TModel, bool>> filter = null)
+        public virtual async Task<int> CountAsync(Expression<Func<TModel, bool>> filter = null)
         {
             using (var ctx = DbContextService.CreateContext())
             {
@@ -151,7 +151,7 @@ namespace EngUtil.EF.CRUDService
         }
 
         /// <inheritdoc>
-        public TModel GetFirst(Expression<Func<TModel, bool>> filter)
+        public virtual TModel GetFirst(Expression<Func<TModel, bool>> filter)
         {
             using (var ctx = DbContextService.CreateContext())
             {
@@ -168,7 +168,7 @@ namespace EngUtil.EF.CRUDService
         }
 
         /// <inheritdoc>
-        public async Task<TModel> GetFirstAsync(Expression<Func<TModel, bool>> filter)
+        public virtual async Task<TModel> GetFirstAsync(Expression<Func<TModel, bool>> filter)
         {
             using (var ctx = DbContextService.CreateContext())
             {
@@ -251,7 +251,7 @@ namespace EngUtil.EF.CRUDService
         }
 
         /// <inheritdoc>
-        public async Task DeleteAsync(TModel model)
+        public virtual async Task DeleteAsync(TModel model)
         {
             using (var ctx = DbContextService.CreateContext())
             {
@@ -265,7 +265,7 @@ namespace EngUtil.EF.CRUDService
         }
 
         /// <inheritdoc>
-        public void Delete(object[] key)
+        public virtual void Delete(object[] key)
         {
             using (var ctx = DbContextService.CreateContext())
             {     
@@ -278,7 +278,7 @@ namespace EngUtil.EF.CRUDService
         }
 
         /// <inheritdoc>
-        public async Task DeleteAsync(object[] key)
+        public virtual async Task DeleteAsync(object[] key)
         {
             using (var ctx = DbContextService.CreateContext())
             {
@@ -291,7 +291,7 @@ namespace EngUtil.EF.CRUDService
         }
 
         /// <inheritdoc>
-        public void Delete(object key)
+        public virtual void Delete(object key)
         {
             using (var ctx = DbContextService.CreateContext())
             {
@@ -304,7 +304,7 @@ namespace EngUtil.EF.CRUDService
         }
 
         /// <inheritdoc>
-        public async Task DeleteAsync(object key)
+        public virtual async Task DeleteAsync(object key)
         {
             using (var ctx = DbContextService.CreateContext())
             {
@@ -317,56 +317,29 @@ namespace EngUtil.EF.CRUDService
         }
 
         /// <inheritdoc>
-        public T GetContext<T>()
-            where T : DbContext
+        public TDbContext GetContext()
         {
-
-            if (typeof(T) != typeof(TDbContext))
-                throw new Exception("Wrong ContextType!");
-            return (T)DbContextService.CreateContext();
-            
+            return (TDbContext)DbContextService.CreateContext();            
         }
 
         #endregion
 
         #region mthods: private     
 
-        private Expression<Func<TModel, bool>> GetKeyExpression(TModel model)
-        {
-            bool singleExpression = true;
-            var param = Expression.Parameter(typeof(TModel), "x");
-            Expression expression = null;
-            var properties = typeof(TModel).GetProperties();
-            foreach (var prop in properties)
-            {
-                if (prop.GetCustomAttribute<KeyAttribute>() != null)
-                {
-                    Expression propertyName = Expression.Property(param, prop.Name);
-                    Expression propertyExpression = Expression.Constant(prop.GetValue(model), prop.PropertyType);
-                    if (singleExpression)
-                        expression = Expression.Equal(propertyName, propertyExpression);
-                    else
-                        expression = Expression.AndAlso(expression, Expression.Equal(propertyName, propertyExpression));
-                    singleExpression = false;
-                }
-            }
-            return Expression.Lambda<Func<TModel, bool>>(expression, param);
-        }
-
         private object[] GetPrimaryKeyValues(object entity)
         {
             return typeof(TEntity)
                 .GetProperties()
                 .Where(x => x.CustomAttributes.Count() > 0 && x.GetCustomAttributes<KeyAttribute>().Count() > 0)
-                .Select(x => new
-                {
-                    Property = x,
-                    KeyOrder = x.GetCustomAttributes<ColumnAttribute>().Count() > 0
-                                    ? x.GetCustomAttributes<ColumnAttribute>().ToList()[0].Order
-                                    : -1
-                })
+                .Select(x => (
+                    Property: x,
+                    KeyOrder: x.GetCustomAttributes<ColumnAttribute>().Count() > 0
+                                ? x.GetCustomAttributes<ColumnAttribute>().ToList()[0].Order
+                                : -1
+                ))
                 .OrderBy(x => x.KeyOrder)
-                .Select(x => x.Property.GetValue(entity)).ToArray();
+                .Select(x => x.Property.GetValue(entity))
+                .ToArray();
         }
 
         #endregion

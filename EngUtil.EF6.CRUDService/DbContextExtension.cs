@@ -8,9 +8,9 @@ using System.Data.Entity;
 using System.Linq;
 using System.Reflection;
 
-namespace EngUtil.EF.CRUDService.Helper
+namespace EngUtil.EF6.CRUDService.Helper
 {
-    public static class DbContextExtension
+    internal static class DbContextExtension
     {
         public static IQueryable<T> GetDbSetAsIQuariable<T>(this DbContext dbContext)
         {
