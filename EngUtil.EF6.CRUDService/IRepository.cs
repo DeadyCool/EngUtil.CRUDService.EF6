@@ -43,6 +43,30 @@ namespace EngUtil.EF6.CRUDService
         /// <param name="filter">Specifies a filter as lambda expression</param>
         Task<TModel> GetFirstAsync(Expression<Func<TModel, bool>> filter);
 
+        /// <summary>
+        /// Returns an entity from the repository by its key
+        /// </summary>
+        /// <param name="key">Represents the key</param>
+        TModel Find(object key);
+
+        /// <summary>
+        /// Returns an entity from the repository by its key
+        /// </summary>
+        /// <param name="key">Represents the key</param>
+        Task<TModel> FindAsync(object key);
+
+        /// <summary>
+        /// Returns an entity from the repository by its key constrains
+        /// </summary>
+        /// <param name="key">Represents the key constrains</param>
+        TModel Find(object[] key);
+
+        /// <summary>
+        /// Returns an entity from the repository by its key constrains
+        /// </summary>
+        /// <param name="key">Represents the key constrains</param>
+        Task<TModel> FindAsync(object[] key);
+
 
         /// <summary>
         /// Returns a list of entities from the repository

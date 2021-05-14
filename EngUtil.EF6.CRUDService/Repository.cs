@@ -101,6 +101,44 @@ namespace EngUtil.EF6.CRUDService
         }
 
         /// <inheritdoc>
+        public virtual TModel Find(object key)
+        {
+            return Find(new[] { key });
+        }
+
+        /// <inheritdoc>
+        public virtual async Task<TModel> FindAsync(object key)
+        {
+            return await FindAsync(new[] { key });
+        }
+
+        /// <inheritdoc>
+        public virtual TModel Find(object[] key)
+        {
+            using (var ctx = DbContextService.CreateContext())
+            {
+                var dbSet = ctx.Set(typeof(TEntity));
+                var entity = dbSet.Find(key);
+                if (entity == null)
+                    return default;
+                return AsModel((TEntity)entity);
+            }
+        }
+
+        /// <inheritdoc>
+        public virtual async Task<TModel> FindAsync(object[] key)
+        {
+            using (var ctx = DbContextService.CreateContext())
+            {
+                var dbSet = ctx.Set(typeof(TEntity));
+                var entity = await dbSet.FindAsync(key);
+                if (entity == null)
+                    return default;
+                return AsModel((TEntity)entity);
+            }
+        }
+
+        /// <inheritdoc>
         public virtual IEnumerable<TModel> Get(Expression<Func<TModel, bool>> filter = null, Func<IQueryable<TModel>, IOrderedQueryable<TModel>> orderBy = null, int skip = 0, int take = 0)
         {
             using (var ctx = DbContextService.CreateContext())
@@ -238,30 +276,18 @@ namespace EngUtil.EF6.CRUDService
 
         /// <inheritdoc>
         public virtual void Delete(TModel model)
-        { 
-            using (var ctx = DbContextService.CreateContext())
-            {
-                var entityToDelete = AsEntity(model);
-                var dbSet = ctx.Set(typeof(TEntity));
-                var entity = dbSet.Find(GetPrimaryKeyValues(entityToDelete));            
-                dbSet.Attach(entity);
-                dbSet.Remove(entity);
-                ctx.SaveChanges();
-            }
+        {
+            var entityToDelete = AsEntity(model);
+            var keys = GetPrimaryKeyValues(entityToDelete);
+            Delete(keys);
         }
 
         /// <inheritdoc>
         public virtual async Task DeleteAsync(TModel model)
         {
-            using (var ctx = DbContextService.CreateContext())
-            {
-                var entityToDelete = AsEntity(model);
-                var dbSet = ctx.Set(typeof(TEntity));
-                var entity = dbSet.Find(GetPrimaryKeyValues(entityToDelete));
-                dbSet.Attach(entity);
-                dbSet.Remove(entity);
-                await ctx.SaveChangesAsync();
-            }
+            var entityToDelete = AsEntity(model);
+            var keys = GetPrimaryKeyValues(entityToDelete);
+            await DeleteAsync(keys);
         }
 
         /// <inheritdoc>
@@ -293,27 +319,13 @@ namespace EngUtil.EF6.CRUDService
         /// <inheritdoc>
         public virtual void Delete(object key)
         {
-            using (var ctx = DbContextService.CreateContext())
-            {
-                var dbSet = ctx.Set(typeof(TEntity));
-                var entity = dbSet.Find(key);
-                dbSet.Attach(entity);
-                dbSet.Remove(entity);
-                ctx.SaveChanges();
-            }
+            Delete(new[] { key });
         }
 
         /// <inheritdoc>
         public virtual async Task DeleteAsync(object key)
         {
-            using (var ctx = DbContextService.CreateContext())
-            {
-                var dbSet = ctx.Set(typeof(TEntity));
-                var entity = dbSet.Find(key);
-                dbSet.Attach(entity);
-                dbSet.Remove(entity);
-                await ctx.SaveChangesAsync();
-            }
+            await DeleteAsync(new[] { key });
         }
 
         /// <inheritdoc>
